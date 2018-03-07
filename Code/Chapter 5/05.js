@@ -26,32 +26,4 @@ $(document).ready(function() {
         attrs += ' inhabitants';
         $(this).attr('class', attrs);
     });
-
-    // let $notes = $('<ol id="notes"></ol>').insertBefore('#footer');
-    // $('span.footnote').each(function(index){
-    //     $(this)
-    //     .before([
-    //     '<a href="#footnote-',
-    //     index + 1,
-    //     '" id="context-',
-    //     index + 1,
-    //     '" class="context"><sup>',
-    //     index + 1,
-    //     '</sup></a>'].join(''))
-    //     .appendTo($notes)
-    //     .append(['&nbsp;<a href="#context-', index + 1, '">context</a>'].join(''))
-    //     .wrap('<li id="footnote-' + (index + 1) + '"></li>')
-    // });
-    // $('span.pull-quote').each(function(index) {
-    //     let $parentParagragh = $(this).parent('p');
-    //     $parentParagragh.css('position', 'relative');
-    //     let $cloneCopy = $(this).clone();
-    //     $cloneCopy
-    //     .addClass('pulled')
-    //     .find('span.drop')
-    //         .html('&hellip;')
-    //     .end()
-    //     .text($cloneCopy.text())// remove bold font
-    //     .prependTo($parentParagragh);
-    // });
 });
