@@ -144,3 +144,102 @@ $.getScript('yaml.js').done(function(){
         });
     });
 });
+
+$(document).on('click', '#categories a',function(event){
+    event.preventDefault();
+    $(this).parent().toggleClass('active').siblings('.active').removeClass('active');
+    $('#ajax-form').triggerHandler('submit');
+});
+$ajaxForm.on('submit', function(event) {
+    event.preventDefault();
+    $response.empty();
+    let title = $('#title').val(),
+        category = $('#categories').find('li.active').text(),
+        api = {};
+    search = category + '-' + title;
+    if (search === '') {
+        return;
+    }
+    $response.addClass('loading');
+    if (!api[search]) {
+        api[search] = $.ajax({
+            url: 'http://book.learningjquery.com/api/',
+            dataType: 'jsonp',
+            data: {
+                title: title,
+                category:category
+            },
+            timeout: 15000
+        });
+    }
+    api[search].done(response).fail(function(){
+        $response.html(failed);
+    }).always(function(){
+        $response.removeClass('loading');
+    })
+})
+$('#title').on('keyup', function(event) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function(){
+        $ajaxForm.triggerHandler('submit');
+    },searchDelay);
+});
+
+
+// adding ajax prefilters
+$.ajaxPrefilter(function(options) {
+    if(/\.yml$/.test(options.url)) {
+        return 'yaml'
+    }
+});
+
+// send and abort
+$.ajaxTransport('img', function(settings) {
+    let $img, img, prop;
+    return {
+        send: function(headers, complete) {
+            function callback(success) {
+                if (success) {
+                    complete(200, 'OK', {img:img})
+                } else {
+                    $img.remove();
+                    complete(404, 'Not Found');
+                }
+            }
+            $img = $('<img>',{
+                src:settings.url // the browser will trying to load the reference
+            });
+            img = $img[0];
+            prop = typeof img.natureWidth === 'undefined' ? 'width' : 'natureWidth';
+            if (img.complete) {
+                callback(!!img[prop]);
+            } else {
+                $img.on('load error', function(event) {
+                    callback(event.type === 'load');
+                });
+            }
+        },
+        abort: function() {
+            if ($img) {
+                $img.remove();
+            }
+        }
+    }
+});
+// new ajax for new transport
+$(document).ready(function() {
+    $.ajax({
+        url: 'missing.jpg',// if url: 'sunset.jpg'
+        dataType: 'img',
+    }).done(function(img) {
+        $('<div></div>',{
+            id: 'picture',
+            html: img
+        }).appendTo('body');
+    }).fail(function(xhr, textStatus, msg) {
+        $('<div></div>', {
+            id: 'picture',
+            html: textStatus + ': ' + msg
+        }).appendTo('body');
+    });
+});
